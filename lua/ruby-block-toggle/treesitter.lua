@@ -213,4 +213,42 @@ function M.get_node_range(node)
   }
 end
 
+---@class BlockKeywords
+---@field opening_keyword TSNode|nil Opening keyword node ("do" or "{")
+---@field closing_keyword TSNode|nil Closing keyword node ("end" or "}")
+---@field block_parameters TSNode|nil Block parameters node (e.g., |x, y|)
+
+--- Get block keywords (do/end or {/}) from block node
+---@param block_node TSNode Block node (do_block or block)
+---@return BlockKeywords|nil Keywords information
+function M.get_block_keywords(block_node)
+  if not block_node then
+    return nil
+  end
+
+  local keywords = {
+    opening_keyword = nil,
+    closing_keyword = nil,
+    block_parameters = nil,
+  }
+
+  -- Iterate through child nodes to find keywords
+  for child in block_node:iter_children() do
+    local child_type = child:type()
+
+    -- Opening keywords
+    if child_type == 'do' or child_type == '{' then
+      keywords.opening_keyword = child
+    -- Closing keywords
+    elseif child_type == 'end' or child_type == '}' then
+      keywords.closing_keyword = child
+    -- Block parameters
+    elseif child_type == 'block_parameters' then
+      keywords.block_parameters = child
+    end
+  end
+
+  return keywords
+end
+
 return M

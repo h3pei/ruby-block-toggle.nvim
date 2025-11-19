@@ -3,120 +3,56 @@ local utils = require('ruby-block-toggle.utils')
 
 local M = {}
 
---- Get current indent settings
----@return string Indent string (spaces or tab)
-local function get_indent()
-  if vim.bo.expandtab then
-    return string.rep(' ', vim.bo.shiftwidth)
-  else
-    return '\t'
-  end
-end
-
---- Get indent level of a line
----@param line string Target line
----@return number Indent level
-local function get_indent_level(line)
-  local indent = line:match('^%s*')
-  if vim.bo.expandtab then
-    return #indent / vim.bo.shiftwidth
-  else
-    return #indent:gsub(' ', '')
-  end
-end
-
---- Generate indent of specified level
----@param level number Indent level
----@return string Indent string
-local function make_indent(level)
-  local indent = get_indent()
-  return string.rep(indent, level)
-end
-
 --- Convert do~end to {}
 ---@param block_node TSNode Block node
 local function convert_doend_to_brace(block_node)
   local bufnr = 0
-  local range = ts.get_node_range(block_node)
 
-  -- Get all lines of the block
-  local lines = vim.api.nvim_buf_get_lines(bufnr, range.start_row, range.end_row + 1, false)
-
-  if #lines == 0 then
+  -- Get block keywords using Treesitter
+  local keywords = ts.get_block_keywords(block_node)
+  if not keywords or not keywords.opening_keyword or not keywords.closing_keyword then
+    utils.notify_error('Failed to find block keywords')
     return
   end
 
-  -- Get indent level from first line
-  local base_indent_level = get_indent_level(lines[1])
-  local base_indent = make_indent(base_indent_level)
+  local do_node = keywords.opening_keyword
+  local end_node = keywords.closing_keyword
 
-  -- Parse and convert each line
-  local new_lines = {}
-  local first_line = lines[1]
+  -- Get positions of "do" and "end"
+  local do_start_row, do_start_col, do_end_row, do_end_col = do_node:range()
+  local end_start_row, end_start_col, end_end_row, end_end_col = end_node:range()
 
-  -- First line: Replace "do" with "{"
-  -- "do |x|" -> "{ |x|" (preserve trailing space)
-  -- "do" -> "{" (no trailing space)
-  local converted_first = first_line:gsub('%s*do(%s*)', ' {%1', 1)
-  table.insert(new_lines, converted_first)
+  -- Replace "end" first (to avoid position shifts)
+  vim.api.nvim_buf_set_text(bufnr, end_start_row, end_start_col, end_end_row, end_end_col, { '}' })
 
-  -- Middle lines: Keep as is (preserve comments and indentation)
-  for i = 2, #lines - 1 do
-    table.insert(new_lines, lines[i])
-  end
-
-  -- Last line: Replace "end" with "}"
-  if #lines > 1 then
-    local last_line = lines[#lines]
-    local converted_last = last_line:gsub('%s*end%s*$', base_indent .. '}', 1)
-    table.insert(new_lines, converted_last)
-  end
-
-  -- Write to buffer
-  vim.api.nvim_buf_set_lines(bufnr, range.start_row, range.end_row + 1, false, new_lines)
+  -- Replace "do" with "{"
+  vim.api.nvim_buf_set_text(bufnr, do_start_row, do_start_col, do_end_row, do_end_col, { '{' })
 end
 
 --- Convert {} to do~end
 ---@param block_node TSNode Block node
 local function convert_brace_to_doend(block_node)
   local bufnr = 0
-  local range = ts.get_node_range(block_node)
 
-  -- Get all lines of the block
-  local lines = vim.api.nvim_buf_get_lines(bufnr, range.start_row, range.end_row + 1, false)
-
-  if #lines == 0 then
+  -- Get block keywords using Treesitter
+  local keywords = ts.get_block_keywords(block_node)
+  if not keywords or not keywords.opening_keyword or not keywords.closing_keyword then
+    utils.notify_error('Failed to find block keywords')
     return
   end
 
-  -- Get indent level from first line
-  local base_indent_level = get_indent_level(lines[1])
-  local base_indent = make_indent(base_indent_level)
+  local brace_open_node = keywords.opening_keyword
+  local brace_close_node = keywords.closing_keyword
 
-  -- Parse and convert each line
-  local new_lines = {}
-  local first_line = lines[1]
+  -- Get positions of "{" and "}"
+  local open_start_row, open_start_col, open_end_row, open_end_col = brace_open_node:range()
+  local close_start_row, close_start_col, close_end_row, close_end_col = brace_close_node:range()
 
-  -- First line: Replace "{" with "do"
-  -- "{ |x|" -> "do |x|" (preserve trailing space)
-  -- "{" -> "do" (no trailing space)
-  local converted_first = first_line:gsub('%s*{(%s*)', ' do%1', 1)
-  table.insert(new_lines, converted_first)
+  -- Replace "}" first (to avoid position shifts)
+  vim.api.nvim_buf_set_text(bufnr, close_start_row, close_start_col, close_end_row, close_end_col, { 'end' })
 
-  -- Middle lines: Keep as is (preserve comments)
-  for i = 2, #lines - 1 do
-    table.insert(new_lines, lines[i])
-  end
-
-  -- Last line: Replace "}" with "end"
-  if #lines > 1 then
-    local last_line = lines[#lines]
-    local converted_last = last_line:gsub('%s*}%s*$', base_indent .. 'end', 1)
-    table.insert(new_lines, converted_last)
-  end
-
-  -- Write to buffer
-  vim.api.nvim_buf_set_lines(bufnr, range.start_row, range.end_row + 1, false, new_lines)
+  -- Replace "{" with "do"
+  vim.api.nvim_buf_set_text(bufnr, open_start_row, open_start_col, open_end_row, open_end_col, { 'do' })
 end
 
 --- Execute toggle
