@@ -14,13 +14,37 @@ ruby-block-toggle.nvimは、Rubyのブロック記法（`do ~ end` と `{}`）�
 
 ## 開発時のテスト方法
 
-このプラグインをテストする際は、以下の手順を推奨：
+### 自動テスト（plenary.nvim）
+
+plenary.nvimを使った自動テストを実装済み。以下のコマンドで実行：
+
+```bash
+# 全テストを実行
+make test
+
+# 特定のテストファイルを実行
+make test-file FILE=tests/unit/toggle_spec.lua
+
+# またはdirectで実行
+nvim --headless --noplugin -u tests/minimal_init.lua \
+  -c "lua require('plenary.test_harness').test_directory('tests/unit/', { minimal_init = 'tests/minimal_init.lua' })"
+```
+
+**テスト前の準備:**
+- plenary.nvimをインストール
+- nvim-treesitterとRubyパーサーをインストール（`:TSInstall ruby`）
+
+**テスト構造:**
+- `tests/unit/toggle_spec.lua`: ブロック変換のテスト
+- `tests/unit/treesitter_spec.lua`: Treesitter関連のテスト
+- `tests/helpers.lua`: テスト用ヘルパー関数
+- `tests/fixtures/blocks.rb`: テスト用サンプルコード
+
+### 手動テスト
 
 1. sample.rbを開いて手動でテスト
 2. Neovimで`:source plugin/ruby-block-toggle.lua`を実行してプラグインをリロード
 3. `:RubyBlockToggle`コマンドを実行して動作確認
-
-自動テストフレームワークは現在存在しないため、変更後は手動で動作確認が必要。
 
 ## アーキテクチャ
 
