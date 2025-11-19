@@ -1,11 +1,10 @@
 # ruby-block-toggle.nvim
 
-A Neovim plugin to toggle Ruby block notation between `do ~ end` and `{}`.
+A Neovim plugin to toggle Ruby block notation between `do ~ end` and `{}` quickly.
 
 ## Features
 
 - Toggle between `do ~ end` and `{}` block syntax
-- Works with multi-line blocks
 - Preserves indentation and comments
 - Finds the nearest block automatically
 - Maintains proper Ruby formatting
@@ -47,34 +46,20 @@ Plug 'h3pei/ruby-block-toggle.nvim'
 2. Place cursor in or near a block
 3. Execute `:RubyBlockToggle` command
 
-### Keymapping
-
-```lua
--- Lua
-vim.keymap.set('n', '<Leader>tb', ':RubyBlockToggle<CR>', { desc = 'Toggle Ruby block' })
-```
-
-```vim
-" VimScript
-nnoremap <Leader>tb :RubyBlockToggle<CR>
-```
-
 ### Examples
 
 #### Converting `do~end` to `{}`
 
 Before:
 ```ruby
-array.each do |item|
-  # comment
+items.each do |item|
   puts item
 end
 ```
 
 After:
 ```ruby
-array.each { |item|
-  # comment
+items.each { |item|
   puts item
 }
 ```
@@ -83,15 +68,15 @@ array.each { |item|
 
 Before:
 ```ruby
-array.map { |x|
-  x * 2
+items.map { |item|
+  item * 2
 }
 ```
 
 After:
 ```ruby
-array.map do |x|
-  x * 2
+items.map do |x|
+  item * 2
 end
 ```
 
@@ -110,9 +95,7 @@ require('ruby-block-toggle').setup({
 })
 ```
 
-## How It Works
-
-### Block Detection Strategy
+## How It Works (Block Detection Strategy)
 
 The plugin uses an intelligent strategy to select which block to toggle:
 
@@ -123,31 +106,23 @@ The plugin uses an intelligent strategy to select which block to toggle:
 
 **Example with nested blocks:**
 ```ruby
-members.each do |member|              # Line 1
-  some_process(member) do             # Line 2
-    puts 'inner block'                # Line 3
-                                      # Line 4 (empty)
-    other_process(member) do          # Line 5
-      puts 'innermost block'          # Line 6
+items.each do |item|         # Line 1
+  process1(item) do          # Line 2
+    puts 'inner block'       # Line 3
+                             # Line 4 (empty)
+    process2(item) do        # Line 5
+      puts 'innermost block' # Line 6
     end
   end
 end
 ```
 
 - Line 1: Toggles `each` block (starts on cursor line)
-- Line 2: Toggles `some_process` block (starts on cursor line)
-- Line 3: Toggles `some_process` block (parent traversal)
-- Line 4: Toggles `some_process` block (parent traversal)
-- Line 5: Toggles `other_process` block (starts on cursor line)
-- Line 6: Toggles `other_process` block (parent traversal)
-
-### Other Features
-
-- Uses Treesitter to accurately detect and parse Ruby blocks
-- Preserves indentation based on your Neovim settings (`expandtab`, `shiftwidth`)
-- Maintains spacing around block parameters (e.g., `do |x|` ↔ `{ |x|`)
-- Shows notifications for operations and errors (configurable)
-- Only operates on Ruby files
+- Line 2: Toggles `process1` block (starts on cursor line)
+- Line 3: Toggles `process1` block (parent traversal)
+- Line 4: Toggles `process1` block (parent traversal)
+- Line 5: Toggles `process2` block (starts on cursor line)
+- Line 6: Toggles `process2` block (parent traversal)
 
 ## License
 
