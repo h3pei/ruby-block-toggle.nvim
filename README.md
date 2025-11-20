@@ -2,11 +2,13 @@
 
 Toggle Ruby blocks between `do...end` and `{}` instantly.
 
-```
-do...end  ⇄  { }
-```
+**`do...end`  ⇄  `{}`**
+
+
+![ruby-block-toggle-demo](https://github.com/user-attachments/assets/cc204486-d4fa-4e24-84da-742b86718301)
 
 **Multi-line block**
+
 ```ruby
 items.each do |item|           items.each { |item|
   puts item                ⇄     puts item
@@ -30,7 +32,7 @@ end                            }
 ## Features
 
 - **One command** — No configuration required
-- **Smart detection** — Finds the nearest block automatically
+- **Smart detection** — Intuitively finds the right block
 - **Treesitter-powered** — Accurate parsing, no regex hacks
 - Preserves indentation and comments
 
@@ -48,7 +50,7 @@ end                            }
   'h3pei/ruby-block-toggle.nvim',
   dependencies = { 'nvim-treesitter/nvim-treesitter' },
   ft = 'ruby',
-  config = true,
+  opts = {},
 }
 ```
 
@@ -61,26 +63,16 @@ Plug 'nvim-treesitter/nvim-treesitter'
 Plug 'h3pei/ruby-block-toggle.nvim'
 ```
 
-```lua
--- packer.nvim
-use {
-  'h3pei/ruby-block-toggle.nvim',
-  requires = { 'nvim-treesitter/nvim-treesitter' },
-  ft = 'ruby',
-  config = function() require('ruby-block-toggle').setup() end
-}
-```
-
 </details>
 
 ## Usage
 
-`:RubyBlockToggle` — that's it.
+`:RubyBlockToggle` — that's it!
 
 Recommended keymap:
 
 ```lua
-vim.keymap.set('n', '<leader>b', '<cmd>RubyBlockToggle<cr>', { desc = 'Toggle Ruby block' })
+vim.keymap.set('n', '<leader>bt', '<cmd>RubyBlockToggle<cr>', { desc = 'Toggle Ruby block' })
 ```
 
 ## Block Detection
@@ -94,6 +86,7 @@ The plugin uses an intelligent strategy to find the right block:
 
 ```ruby
 items.each do |item|         # ← cursor here: toggles `each`
+                             # ← cursor here: toggles `each` (parent)
   item.process do            # ← cursor here: toggles `process`
     puts item                # ← cursor here: toggles `process` (parent)
   end
