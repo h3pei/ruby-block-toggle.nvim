@@ -6,10 +6,25 @@ Toggle Ruby blocks between `do...end` and `{}` instantly.
 do...end  ⇄  { }
 ```
 
+**Multi-line block**
 ```ruby
-items.each do |item|        items.each { |item|
-  puts item              ⇄    puts item
-end                         }
+items.each do |item|           items.each { |item|
+  puts item                ⇄     puts item
+end                            }
+```
+
+**Single-line block**
+```ruby
+items.map do |x| x * 2 end  ⇄  items.map { |x| x * 2 }
+```
+
+**Nested blocks** ([smart detection](#block-detection))
+```ruby
+items.each do |item|           items.each { |item|
+  item.process do          ⇄     item.process do
+    puts item                      puts item
+  end                            end
+end                            }
 ```
 
 ## Features
@@ -66,6 +81,23 @@ Recommended keymap:
 
 ```lua
 vim.keymap.set('n', '<leader>b', '<cmd>RubyBlockToggle<cr>', { desc = 'Toggle Ruby block' })
+```
+
+## Block Detection
+
+The plugin uses an intelligent strategy to find the right block:
+
+1. **Cursor line priority** — If a block starts on the cursor line, that block is selected
+   - For nested blocks on the same line, the innermost block is chosen
+2. **Parent traversal** — If no block starts on the cursor line, traverse upward to find the nearest parent block
+3. **Nearest fallback** — If neither finds a block, select the closest block by distance
+
+```ruby
+items.each do |item|         # ← cursor here: toggles `each`
+  item.process do            # ← cursor here: toggles `process`
+    puts item                # ← cursor here: toggles `process` (parent)
+  end
+end
 ```
 
 ## License
