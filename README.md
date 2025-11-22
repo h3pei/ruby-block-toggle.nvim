@@ -4,43 +4,58 @@ Toggle Ruby blocks between `do...end` and `{}` instantly.
 
 **`do...end`  ⇄  `{}`**
 
-
 ![ruby-block-toggle-demo](https://github.com/user-attachments/assets/cc204486-d4fa-4e24-84da-742b86718301)
 
 **Multi-line block**
 
 ```ruby
-items.each do |item|           items.each { |item|
-  puts item                ⇄     puts item
-end                            }
+items.each { |item|
+  puts item
+}
+```
+↕
+```ruby
+items.each do |item|
+  puts item
+end
 ```
 
 **Single-line block**
 ```ruby
-items.map do |x| x * 2 end  ⇄  items.map { |x| x * 2 }
+items.map do |x| x * 2 end
+```
+↕
+```ruby
+items.map { |x| x * 2 }
 ```
 
 **Nested blocks** ([smart detection](#block-detection))
 ```ruby
-items.each do |item|           items.each { |item|
-  item.process do          ⇄     item.process do
-    puts item                      puts item
-  end                            end
-end                            }
+items.each { |item|
+  item.process do
+    puts item
+  end
+}
+```
+↕
+```ruby
+items.each do |item|
+  item.process do
+    puts item
+  end
+end
 ```
 
 ## Features
 
-- **One command** — No configuration required
-- **Smart detection** — Intuitively finds the right block
-- **Treesitter-powered** — Accurate parsing, no regex hacks
-- Preserves indentation and comments
+- **One command**: No configuration required
+- **Smart detection**: Intuitively finds the right block
+- **Treesitter-powered**: Accurate parsing, no regex hacks
 
 ## Requirements
 
 - Neovim >= 0.7
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
-- Ruby parser (`:TSInstall ruby`)
+- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) with Ruby parser (Run `:TSInstall ruby`)
 
 ## Installation
 
@@ -92,7 +107,3 @@ items.each do |item|         # ← cursor here: toggles `each`
   end
 end
 ```
-
-## License
-
-MIT
