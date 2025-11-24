@@ -60,8 +60,7 @@ function M.toggle()
 
   -- Execute toggle with error handling
   local ok, err = pcall(function()
-    local toggle = require("ruby-block-toggle.toggle")
-    toggle.execute()
+    require("ruby-block-toggle.toggle").execute()
   end)
 
   if not ok then

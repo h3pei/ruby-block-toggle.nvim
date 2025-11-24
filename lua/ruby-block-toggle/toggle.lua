@@ -18,6 +18,8 @@ local function convert_doend_to_brace(block_node)
   local do_node = keywords.opening_keyword
   local end_node = keywords.closing_keyword
 
+  ---@cast do_node TSNode
+  ---@cast end_node TSNode
   -- Get positions of "do" and "end"
   local do_start_row, do_start_col, do_end_row, do_end_col = do_node:range()
   local end_start_row, end_start_col, end_end_row, end_end_col = end_node:range()
@@ -44,6 +46,8 @@ local function convert_brace_to_doend(block_node)
   local brace_open_node = keywords.opening_keyword
   local brace_close_node = keywords.closing_keyword
 
+  ---@cast brace_open_node TSNode
+  ---@cast brace_close_node TSNode
   -- Get positions of "{" and "}"
   local open_start_row, open_start_col, open_end_row, open_end_col = brace_open_node:range()
   local close_start_row, close_start_col, close_end_row, close_end_col = brace_close_node:range()
