@@ -8,7 +8,6 @@ ruby-block-toggle.nvimは、Rubyのブロック記法（`do ~ end` と `{}`）�
 
 ## 依存関係
 
-- Neovim >= 0.7
 - nvim-treesitter
 - Treesitter Ruby parser (`:TSInstall ruby`)
 

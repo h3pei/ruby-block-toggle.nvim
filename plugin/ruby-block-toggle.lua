@@ -1,9 +1,3 @@
--- Requires Neovim 0.7 or later
-if vim.fn.has("nvim-0.7") == 0 then
-  vim.notify("ruby-block-toggle requires Neovim >= 0.7", vim.log.levels.ERROR)
-  return
-end
-
 -- Prevent double loading
 if vim.g.loaded_ruby_block_toggle then
   return

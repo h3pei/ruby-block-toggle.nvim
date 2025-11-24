@@ -54,7 +54,6 @@ end
 
 ## Requirements
 
-- Neovim >= 0.7
 - [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) with Ruby parser (Run `:TSInstall ruby`)
 
 ## Installation
