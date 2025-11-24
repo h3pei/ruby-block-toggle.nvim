@@ -84,10 +84,10 @@ Plug 'h3pei/ruby-block-toggle.nvim'
 
 `:RubyBlockToggle` — that's it!
 
-Recommended keymap:
+Example keymap:
 
 ```lua
-vim.keymap.set('n', '<leader>bt', '<cmd>RubyBlockToggle<cr>', { desc = 'Toggle Ruby block' })
+vim.keymap.set('n', '<leader>rb', '<cmd>RubyBlockToggle<cr>', { desc = 'Toggle Ruby block' })
 ```
 
 ## Block Detection
