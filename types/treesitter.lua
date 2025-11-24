@@ -1,6 +1,6 @@
 ---@meta
 
----TreeSitterノードを表すクラス
+---TreeSitter Node
 ---@class TSNode
 ---@field type fun(self: TSNode): string ノードのタイプを取得
 ---@field parent fun(self: TSNode): TSNode|nil 親ノードを取得
