@@ -1,18 +1,18 @@
 -- Tests for block toggle functionality
-local helpers = require('tests.helpers')
+local helpers = require("tests.helpers")
 
-describe('ruby-block-toggle', function()
+describe("ruby-block-toggle", function()
   local toggle
 
   before_each(function()
     -- Check dependencies
     if not helpers.check_dependencies() then
-      pending('nvim-treesitter or Ruby parser not available')
+      pending("nvim-treesitter or Ruby parser not available")
       return
     end
 
     -- Load the plugin
-    toggle = require('ruby-block-toggle')
+    toggle = require("ruby-block-toggle")
     toggle.setup({
       log_level = false, -- Disable notifications during tests
     })
@@ -22,8 +22,8 @@ describe('ruby-block-toggle', function()
     helpers.cleanup_buffer()
   end)
 
-  describe('do~end to {} conversion', function()
-    it('should convert simple do~end block to braces', function()
+  describe("do~end to {} conversion", function()
+    it("should convert simple do~end block to braces", function()
       local content = [[
 items.each do |item|
   puts item
@@ -34,24 +34,24 @@ end]]
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('items%.each { |item|') ~= nil)
-      assert.is_true(result:match('}') ~= nil)
-      assert.is_true(result:match('do') == nil)
-      assert.is_true(result:match('end') == nil)
+      assert.is_true(result:match("items%.each { |item|") ~= nil)
+      assert.is_true(result:match("}") ~= nil)
+      assert.is_true(result:match("do") == nil)
+      assert.is_true(result:match("end") == nil)
     end)
 
-    it('should convert single-line do~end block (BUG FIX)', function()
-      local content = 'foo do 1 end'
+    it("should convert single-line do~end block (BUG FIX)", function()
+      local content = "foo do 1 end"
 
       helpers.setup_ruby_buffer(content, { 1, 5 }) -- Cursor on "do"
 
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.are.equal('foo { 1 }', result)
+      assert.are.equal("foo { 1 }", result)
     end)
 
-    it('should preserve block parameters', function()
+    it("should preserve block parameters", function()
       local content = [[
 items.map do |x|
   x * 2
@@ -62,11 +62,11 @@ end]]
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('items%.map { |x|') ~= nil)
-      assert.is_true(result:match('x %* 2') ~= nil)
+      assert.is_true(result:match("items%.map { |x|") ~= nil)
+      assert.is_true(result:match("x %* 2") ~= nil)
     end)
 
-    it('should preserve comments inside block', function()
+    it("should preserve comments inside block", function()
       local content = [[
 items.map do |item|
   # This is a comment
@@ -78,11 +78,11 @@ end]]
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('# This is a comment') ~= nil)
-      assert.is_true(result:match('items%.map {') ~= nil)
+      assert.is_true(result:match("# This is a comment") ~= nil)
+      assert.is_true(result:match("items%.map {") ~= nil)
     end)
 
-    it('should preserve indentation', function()
+    it("should preserve indentation", function()
       local content = [[
 items.each do |item|
   puts item
@@ -94,13 +94,13 @@ end]]
 
       local result = helpers.get_buffer_content()
       -- Check that indentation is preserved
-      local lines = vim.split(result, '\n')
-      assert.is_true(lines[2]:match('^%s+puts') ~= nil)
+      local lines = vim.split(result, "\n")
+      assert.is_true(lines[2]:match("^%s+puts") ~= nil)
     end)
   end)
 
-  describe('{} to do~end conversion', function()
-    it('should convert simple brace block to do~end', function()
+  describe("{} to do~end conversion", function()
+    it("should convert simple brace block to do~end", function()
       local content = [[
 items.map { |item|
   item * 2
@@ -111,25 +111,25 @@ items.map { |item|
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('items%.map do |item|') ~= nil)
-      assert.is_true(result:match('end') ~= nil)
-      assert.is_true(result:match('{') == nil)
-      assert.is_true(result:match('}') == nil)
+      assert.is_true(result:match("items%.map do |item|") ~= nil)
+      assert.is_true(result:match("end") ~= nil)
+      assert.is_true(result:match("{") == nil)
+      assert.is_true(result:match("}") == nil)
     end)
 
-    it('should convert single-line brace block', function()
-      local content = 'bar { |x| x * 2 }'
+    it("should convert single-line brace block", function()
+      local content = "bar { |x| x * 2 }"
 
       helpers.setup_ruby_buffer(content, { 1, 5 }) -- Cursor on "{"
 
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('bar do |x|') ~= nil)
-      assert.is_true(result:match('end') ~= nil)
+      assert.is_true(result:match("bar do |x|") ~= nil)
+      assert.is_true(result:match("end") ~= nil)
     end)
 
-    it('should preserve block parameters', function()
+    it("should preserve block parameters", function()
       local content = [[
 items.reject { |item|
   item.nil?
@@ -140,13 +140,13 @@ items.reject { |item|
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('items%.reject do |item|') ~= nil)
-      assert.is_true(result:match('item%.nil%?') ~= nil)
+      assert.is_true(result:match("items%.reject do |item|") ~= nil)
+      assert.is_true(result:match("item%.nil%?") ~= nil)
     end)
   end)
 
-  describe('nested blocks', function()
-    it('should toggle innermost block on cursor line', function()
+  describe("nested blocks", function()
+    it("should toggle innermost block on cursor line", function()
       local content = [[
 members.each do |member|
   some_process(member) do
@@ -160,12 +160,12 @@ end]]
 
       local result = helpers.get_buffer_content()
       -- Outer block should remain do~end
-      assert.is_true(result:match('members%.each do') ~= nil)
+      assert.is_true(result:match("members%.each do") ~= nil)
       -- Inner block should be converted to braces
-      assert.is_true(result:match('some_process%(member%) {') ~= nil)
+      assert.is_true(result:match("some_process%(member%) {") ~= nil)
     end)
 
-    it('should toggle outer block when cursor is on outer block line', function()
+    it("should toggle outer block when cursor is on outer block line", function()
       local content = [[
 members.each do |member|
   some_process(member) do
@@ -179,14 +179,14 @@ end]]
 
       local result = helpers.get_buffer_content()
       -- Outer block should be converted to braces
-      assert.is_true(result:match('members%.each {') ~= nil)
+      assert.is_true(result:match("members%.each {") ~= nil)
       -- Inner block should remain do~end
-      assert.is_true(result:match('some_process%(member%) do') ~= nil)
+      assert.is_true(result:match("some_process%(member%) do") ~= nil)
     end)
   end)
 
-  describe('edge cases', function()
-    it('should handle empty blocks', function()
+  describe("edge cases", function()
+    it("should handle empty blocks", function()
       local content = [[
 array.each do |x|
 end]]
@@ -196,11 +196,11 @@ end]]
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('array%.each { |x|') ~= nil)
-      assert.is_true(result:match('}') ~= nil)
+      assert.is_true(result:match("array%.each { |x|") ~= nil)
+      assert.is_true(result:match("}") ~= nil)
     end)
 
-    it('should handle blocks without parameters', function()
+    it("should handle blocks without parameters", function()
       local content = [[
 5.times do
   puts 'hello'
@@ -211,13 +211,13 @@ end]]
       toggle.toggle()
 
       local result = helpers.get_buffer_content()
-      assert.is_true(result:match('5%.times {') ~= nil)
+      assert.is_true(result:match("5%.times {") ~= nil)
     end)
 
-    it('should not toggle if not in a Ruby file', function()
+    it("should not toggle if not in a Ruby file", function()
       local bufnr = vim.api.nvim_create_buf(false, true)
       vim.api.nvim_set_current_buf(bufnr)
-      vim.bo[bufnr].filetype = 'lua' -- Not Ruby
+      vim.bo[bufnr].filetype = "lua" -- Not Ruby
 
       -- This should not error, just show a warning
       toggle.toggle()
@@ -225,7 +225,7 @@ end]]
       -- Buffer should remain unchanged (empty buffer has 1 empty line by default)
       local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
       assert.are.equal(1, #lines)
-      assert.are.equal('', lines[1])
+      assert.are.equal("", lines[1])
 
       helpers.cleanup_buffer(bufnr)
     end)

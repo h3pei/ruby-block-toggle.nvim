@@ -5,7 +5,7 @@ local M = {}
 ---@param level number Log level
 local function notify(message, level)
   -- Lazy load config to avoid circular dependency
-  local config = require('ruby-block-toggle').config
+  local config = require("ruby-block-toggle").config
 
   -- Don't notify if log_level is false
   if config.log_level == false then
@@ -14,7 +14,7 @@ local function notify(message, level)
 
   -- Only notify if level is greater than or equal to configured log_level
   if level >= config.log_level then
-    vim.notify(message, level, { title = 'Ruby Block Toggle' })
+    vim.notify(message, level, { title = "Ruby Block Toggle" })
   end
 end
 

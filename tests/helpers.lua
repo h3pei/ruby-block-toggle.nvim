@@ -11,11 +11,11 @@ function M.setup_ruby_buffer(content, cursor_pos)
   vim.api.nvim_set_current_buf(bufnr)
 
   -- Set content
-  local lines = vim.split(content, '\n', { plain = true })
+  local lines = vim.split(content, "\n", { plain = true })
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
 
   -- Set filetype to Ruby
-  vim.bo[bufnr].filetype = 'ruby'
+  vim.bo[bufnr].filetype = "ruby"
 
   -- Set cursor position if provided
   if cursor_pos then
@@ -31,20 +31,20 @@ end
 function M.get_buffer_content(bufnr)
   bufnr = bufnr or 0
   local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-  return table.concat(lines, '\n')
+  return table.concat(lines, "\n")
 end
 
 --- Check if nvim-treesitter and Ruby parser are available
 ---@return boolean available True if dependencies are satisfied
 function M.check_dependencies()
   -- Check nvim-treesitter
-  local has_ts = pcall(require, 'nvim-treesitter')
+  local has_ts = pcall(require, "nvim-treesitter")
   if not has_ts then
     return false
   end
 
   -- Check Ruby parser
-  local has_parser = pcall(vim.treesitter.get_parser, 0, 'ruby')
+  local has_parser = pcall(vim.treesitter.get_parser, 0, "ruby")
   if not has_parser then
     return false
   end

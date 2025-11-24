@@ -20,20 +20,20 @@ function M.get_node_at_cursor()
   local row, col = cursor[1] - 1, cursor[2] -- 0-indexed
 
   -- Get Ruby parser
-  local ok, parser = pcall(vim.treesitter.get_parser, 0, 'ruby')
+  local ok, parser = pcall(vim.treesitter.get_parser, 0, "ruby")
   if not ok or not parser then
-    return nil, 'Failed to get Ruby parser'
+    return nil, "Failed to get Ruby parser"
   end
 
   -- Parse syntax tree
   local trees = parser:parse()
   if not trees or #trees == 0 then
-    return nil, 'Failed to parse buffer'
+    return nil, "Failed to parse buffer"
   end
 
   local tree = trees[1]
   if not tree then
-    return nil, 'Failed to get syntax tree'
+    return nil, "Failed to get syntax tree"
   end
 
   local root = tree:root()
@@ -117,19 +117,19 @@ function M.find_nearest_block()
   local cursor_row, cursor_col = cursor[1] - 1, cursor[2]
 
   -- Get blocks from entire buffer
-  local ok_parser, parser = pcall(vim.treesitter.get_parser, 0, 'ruby')
+  local ok_parser, parser = pcall(vim.treesitter.get_parser, 0, "ruby")
   if not ok_parser or not parser then
-    return nil, 'Failed to get Ruby parser'
+    return nil, "Failed to get Ruby parser"
   end
 
   local trees = parser:parse()
   if not trees or #trees == 0 then
-    return nil, 'Failed to parse buffer'
+    return nil, "Failed to parse buffer"
   end
 
   local tree = trees[1]
   if not tree then
-    return nil, 'Failed to get syntax tree'
+    return nil, "Failed to get syntax tree"
   end
   local root = tree:root()
 
@@ -139,9 +139,9 @@ function M.find_nearest_block()
     (block) @block
   ]]
 
-  local ok, query = pcall(vim.treesitter.query.parse, 'ruby', query_str)
+  local ok, query = pcall(vim.treesitter.query.parse, "ruby", query_str)
   if not ok then
-    return nil, 'Failed to parse Treesitter query'
+    return nil, "Failed to parse Treesitter query"
   end
 
   -- 1. Search for blocks starting on cursor line (priority)
@@ -197,7 +197,7 @@ function M.find_nearest_block()
     return nearest_block, nearest_block:type()
   end
 
-  return nil, 'No Ruby block found near cursor'
+  return nil, "No Ruby block found near cursor"
 end
 
 --- Get text range of node
@@ -237,13 +237,13 @@ function M.get_block_keywords(block_node)
     local child_type = child:type()
 
     -- Opening keywords
-    if child_type == 'do' or child_type == '{' then
+    if child_type == "do" or child_type == "{" then
       keywords.opening_keyword = child
     -- Closing keywords
-    elseif child_type == 'end' or child_type == '}' then
+    elseif child_type == "end" or child_type == "}" then
       keywords.closing_keyword = child
     -- Block parameters
-    elseif child_type == 'block_parameters' then
+    elseif child_type == "block_parameters" then
       keywords.block_parameters = child
     end
   end
